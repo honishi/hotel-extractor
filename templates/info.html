@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>hotel extractor</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='css/starter-template.css') }}" rel="stylesheet">
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">hotel extractor</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">home</a></li>
+                <!--
+                <li><a href="#about">about</a></li>
+                <li><a href="#contact">contact</a></li>
+                -->
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+
+<div class="container">
+
+<br />
+
+    <form action="/query" method="post" class="form-search">
+        <div class="input-group">
+            <input type="text" name="hotel_name" placeholder='enter hotel name like "ルートイン弘前駅前"'
+                   value="{{ request.form['hotel_name'] }}" autofocus="autofocus" class="form-control">
+            <span class="input-group-btn">
+            <button type="submit" class="btn btn-default">search</button>
+            </span>
+        </div>
+    </form>
+
+    {% if request.form['hotel_name'] != '' and ikkyu_search_result is not none %}
+        <!-- search result -->
+        <h2>search result</h2>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>site</th>
+                <th>hit count</th>
+                <th>extracted data from</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>ikyu.com</td>
+                <td>
+                    <a href="{{ ikkyu_search_result[3] }}" target="_blank">{{ ikkyu_search_result[0] }}</a>
+                </td>
+                <td>
+                    [ <a href="{{ ikkyu_search_result[2] }}" target="_blank">{{ ikkyu_search_result[1] }}</a> ]
+                    <button type="button" class="btn-link btn-xs copy-button" data-clipboard-text="{{ ikkyu_search_result[1] }}" >copy</button>
+                </td>
+            </tr>
+            <tr>
+                <td>jalan.net</td>
+                <td>
+                    <a href="{{ jalan_search_result[3] }}" target="_blank">{{ jalan_search_result[0] }}</a>
+                </td>
+                <td>
+                    [ <a href="{{ jalan_search_result[2] }}" target="_blank">{{ jalan_search_result[1] }}</a> ]
+                    <button type="button" class="btn-link btn-xs copy-button" data-clipboard-text="{{ jalan_search_result[1] }}" >copy</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- hotel information -->
+        <h2>extracted hotel information</h2>
+
+        {% if 0 < ikkyu_search_result[0] %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>extracted from</th>
+                    <th>key</th>
+                    <th>value</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td rowspan="10">ikyu.com</td>
+                    <td>name</td>
+                    <td class="vcenter">
+                        [ <a href="{{ ikkyu_search_result[2] }}" target="_blank">{{ ikkyu_info[0] }}</a> ]
+                        <button type="button" class="btn-link btn-xs" onclick="window.open('http://google.com/search?q={{ ikkyu_info[0] }}')">google</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>address</td>
+                    <td>
+                        <div class="col-xs-8"><input value="{{ ikkyu_info[1] }}" onClick="this.select();" class="form-control" /> </div>
+                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[1] }}" >Copy</button>
+                        <button type="button" class="btn-xs btn-link" onclick="window.open('http://maps.google.com/maps?q={{ ikkyu_info[1] }}')">map</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>tel</td>
+                    <td>
+                        <div class="col-xs-8"><input value="{{ ikkyu_info[2] }}" onClick="this.select();" class="form-control" /></div>
+                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[2] }}" >Copy</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>check-in</td>
+                    <td>
+                        <div class="col-xs-8"><input value="{{ ikkyu_info[3] }}" onClick="this.select();" class="form-control" /></div>
+                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[3] }}" >Copy</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>check-out</td>
+                    <td>
+                        <div class="col-xs-8"><input value="{{ ikkyu_info[4] }}" onClick="this.select();" class="form-control" /></div>
+                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[4] }}" >Copy</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>park</td>
+                    <td>{{ ikkyu_info[5] }}</td>
+                </tr>
+                <tr>
+                    <td>room service</td>
+                    <td>{{ ikkyu_info[6] }}</td>
+                </tr>
+                <tr>
+                    <td>esthetic</td>
+                    <td>{{ ikkyu_info[7] }}</td>
+                </tr>
+                <tr>
+                    <td>fitness</td>
+                    <td>{{ ikkyu_info[8] }}</td>
+                </tr>
+                <tr>
+                    <td>pet</td>
+                    <td>{{ ikkyu_info[9] }}</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">jalan.net</td>
+                    <td>name</td>
+                    <td>
+                        [ <a href="{{ jalan_search_result[2] }}" target="_blank">{{ jalan_info[0] }}</a> ]
+                        <button type="button" class="btn-link btn-xs" onclick="window.open('http://google.com/search?q={{ jalan_info[0] }}')">google</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>internet</td>
+                    <td>{{ jalan_info[1] }}</td>
+                </tr>
+                </tbody>
+            </table>
+
+        {% endif %}
+    {% endif %}
+
+</div><!-- /.container -->
+
+<!-- activate copy buttons -->
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.6/ZeroClipboard.js"></script>
+<script type="text/javascript">
+    var client = new ZeroClipboard($(".copy-button"));
+</script>
+
+</body>
+</html>
