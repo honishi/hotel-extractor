@@ -14,10 +14,13 @@
     <link href="{{ url_for('static', filename='css/starter-template.css') }}" rel="stylesheet">
 
     <!-- jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/zclip/1.1.2/jquery.zclip.min.js"></script>
 </head>
 
 <body>
+
+<!-- navigation -->
 
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
@@ -42,14 +45,16 @@
     </div>
 </div>
 
-<div class="container">
+<!-- main container -->
 
-<br />
+<div class="container">
+    <br />
 
     <form action="/query" method="post" class="form-search">
         <div class="input-group">
             <input type="text" name="hotel_name" placeholder='enter hotel name like "ルートイン弘前駅前"'
-                   value="{{ request.form['hotel_name'] }}" autofocus="autofocus" class="form-control">
+                   value="{{ request.form['hotel_name'] }}" autofocus="autofocus" class="form-control"
+                   onclick="this.select();">
             <span class="input-group-btn">
             <button type="submit" class="btn btn-default">search</button>
             </span>
@@ -65,7 +70,7 @@
             <tr>
                 <th>site</th>
                 <th>hit count</th>
-                <th>extracted data from</th>
+                <th>topmost hotel in search result</th>
             </tr>
             </thead>
 
@@ -77,7 +82,8 @@
                 </td>
                 <td>
                     [ <a href="{{ ikkyu_search_result[2] }}" target="_blank">{{ ikkyu_search_result[1] }}</a> ]
-                    <button type="button" class="btn-link btn-xs copy-button" data-clipboard-text="{{ ikkyu_search_result[1] }}" >copy</button>
+                    <input id="input-ikyu-hotel-name" type="hidden" value="{{ ikkyu_search_result[1] }}">
+                    <button id="copy-button-ikyu-hotel-name" type="button" class="btn-link btn-xs">copy</button>
                 </td>
             </tr>
             <tr>
@@ -87,7 +93,8 @@
                 </td>
                 <td>
                     [ <a href="{{ jalan_search_result[2] }}" target="_blank">{{ jalan_search_result[1] }}</a> ]
-                    <button type="button" class="btn-link btn-xs copy-button" data-clipboard-text="{{ jalan_search_result[1] }}" >copy</button>
+                    <input id="input-jalan-hotel-name" type="hidden" value="{{ jalan_search_result[1] }}">
+                    <button id="copy-button-jalan-hotel-name" type="button" class="btn-link btn-xs">copy</button>
                 </td>
             </tr>
             </tbody>
@@ -108,9 +115,9 @@
 
                 <tbody>
                 <tr>
-                    <td rowspan="10">ikyu.com</td>
+                    <td rowspan="13">ikyu.com</td>
                     <td>name</td>
-                    <td class="vcenter">
+                    <td>
                         [ <a href="{{ ikkyu_search_result[2] }}" target="_blank">{{ ikkyu_info[0] }}</a> ]
                         <button type="button" class="btn-link btn-xs" onclick="window.open('http://google.com/search?q={{ ikkyu_info[0] }}')">google</button>
                     </td>
@@ -118,54 +125,62 @@
                 <tr>
                     <td>address</td>
                     <td>
-                        <div class="col-xs-8"><input value="{{ ikkyu_info[1] }}" onClick="this.select();" class="form-control" /> </div>
-                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[1] }}" >Copy</button>
+                        <div class="col-xs-8">
+                            <input id="input-address" value="{{ ikkyu_info[1] }}" onClick="this.select();"  class="form-control" />
+                        </div>
+                        <button id="copy-button-address" type="button" class="btn btn-default">Copy</button>
                         <button type="button" class="btn-xs btn-link" onclick="window.open('http://maps.google.com/maps?q={{ ikkyu_info[1] }}')">map</button>
                     </td>
                 </tr>
                 <tr>
                     <td>tel</td>
                     <td>
-                        <div class="col-xs-8"><input value="{{ ikkyu_info[2] }}" onClick="this.select();" class="form-control" /></div>
-                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[2] }}" >Copy</button>
+                        <div class="col-xs-8">
+                            <input id="input-tel" value="{{ ikkyu_info[2] }}" onClick="this.select();" class="form-control" />
+                        </div>
+                        <button id="copy-button-tel" type="button" class="btn btn-default">Copy</button>
                     </td>
                 </tr>
                 <tr>
                     <td>check-in</td>
                     <td>
-                        <div class="col-xs-8"><input value="{{ ikkyu_info[3] }}" onClick="this.select();" class="form-control" /></div>
-                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[3] }}" >Copy</button>
+                        <div class="col-xs-8">
+                            <input id="input-check-in" value="{{ ikkyu_info[3] }}" onClick="this.select();" class="form-control" />
+                        </div>
+                        <button id="copy-button-check-in" type="button" class="btn btn-default">Copy</button>
                     </td>
                 </tr>
                 <tr>
                     <td>check-out</td>
                     <td>
-                        <div class="col-xs-8"><input value="{{ ikkyu_info[4] }}" onClick="this.select();" class="form-control" /></div>
-                        <button type="button" class="btn btn-default copy-button" data-clipboard-text="{{ ikkyu_info[4] }}" >Copy</button>
+                        <div class="col-xs-8">
+                            <input id="input-check-out" value="{{ ikkyu_info[4] }}" onClick="this.select();" class="form-control" />
+                        </div>
+                        <button id="copy-button-check-out" type="button" class="btn btn-default">Copy</button>
                     </td>
                 </tr>
                 <tr>
-                    <td>park</td>
-                    <td>{{ ikkyu_info[5] }}</td>
+                    <td>hotel facilities</td>
+                    <td>
+                        <div class="col-xs-8">
+                            <input id="input-hotel-facilities" value="" onClick="this.select();" class="form-control" />
+                        </div>
+                        <button id="copy-button-hotel-facilities" type="button" class="btn btn-default">Copy</button>
+                    </td>
                 </tr>
+                {% for facility_index, facility_name in [(1, "room_service"), (2, "park"), (3, "bar"),
+                    (4, "restaurant"), (5, "fitness"), (6, "esthetic"), (7, "pet")] %}
+                    <tr>
+                        <td>{{ facility_index }}. {{ facility_name }}</td>
+                        <td>
+                            <label class="radio-inline"><input type="radio" name="radio_{{ facility_name }}" id="radio_{{ facility_name }}_yes" value="{{ facility_index }},">YES</label>
+                            <label class="radio-inline"><input type="radio" name="radio_{{ facility_name }}" id="radio_{{ facility_name }}_no" value="">NO</label>
+                            <label class="radio-inline"><input type="radio" name="radio_{{ facility_name }}" id="radio_{{ facility_name }}_unknown" value="">UNKNOWN</label>
+                        </td>
+                    </tr>
+                {% endfor %}
                 <tr>
-                    <td>room service</td>
-                    <td>{{ ikkyu_info[6] }}</td>
-                </tr>
-                <tr>
-                    <td>esthetic</td>
-                    <td>{{ ikkyu_info[7] }}</td>
-                </tr>
-                <tr>
-                    <td>fitness</td>
-                    <td>{{ ikkyu_info[8] }}</td>
-                </tr>
-                <tr>
-                    <td>pet</td>
-                    <td>{{ ikkyu_info[9] }}</td>
-                </tr>
-                <tr>
-                    <td rowspan="2">jalan.net</td>
+                    <td rowspan="3">jalan.net</td>
                     <td>name</td>
                     <td>
                         [ <a href="{{ jalan_search_result[2] }}" target="_blank">{{ jalan_info[0] }}</a> ]
@@ -173,21 +188,120 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>internet</td>
-                    <td>{{ jalan_info[1] }}</td>
+                    <td>room facilities</td>
+                    <td>
+                        <div class="col-xs-8">
+                            <input id="input-room-facilities" value="" onClick="this.select();" class="form-control" />
+                        </div>
+                        <button id="copy-button-room-facilities" type="button" class="btn btn-default">Copy</button>
+                    </td>
                 </tr>
+                {% for facility_index, facility_name in [(1, "internet")] %}
+                    <tr>
+                        <td>{{ facility_index }}. {{ facility_name }}</td>
+                        <td>
+                            <label class="radio-inline"><input type="radio" name="radio_{{ facility_name }}" id="radio_{{ facility_name }}_yes" value="{{ facility_index }},">YES</label>
+                            <label class="radio-inline"><input type="radio" name="radio_{{ facility_name }}" id="radio_{{ facility_name }}_no" value="">NO</label>
+                            <label class="radio-inline"><input type="radio" name="radio_{{ facility_name }}" id="radio_{{ facility_name }}_unknown" value="">UNKNOWN</label>
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
 
         {% endif %}
     {% endif %}
 
-</div><!-- /.container -->
+</div>
 
-<!-- activate copy buttons -->
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.6/ZeroClipboard.js"></script>
+<!-- javascripts -->
 <script type="text/javascript">
-    var client = new ZeroClipboard($(".copy-button"));
+    <!-- facilities common -->
+    function setupFacilityRadioButton(radioName, serviceAvailable) {
+        var radioSelectorId = "#radio_" + radioName + "_" + serviceAvailable.toLowerCase();
+        $(radioSelectorId).attr("checked", "checked");
+
+        var radioSelectorName = "radio_" + radioName;
+        $("input[name='" + radioSelectorName + "']").change(function() {
+            updateHotelFacilities();
+            updateRoomFacilities();
+        });
+    }
+
+    <!-- hotel facilities -->
+    function setupAllHotelFacilityRadioButtons() {
+        setupFacilityRadioButton("room_service", "{{ ikkyu_info[5] }}");
+        setupFacilityRadioButton("park", "{{ ikkyu_info[6] }}");
+        setupFacilityRadioButton("bar", "{{ ikkyu_info[7] }}");
+        setupFacilityRadioButton("restaurant", "{{ ikkyu_info[8] }}");
+        setupFacilityRadioButton("fitness", "{{ ikkyu_info[9] }}");
+        setupFacilityRadioButton("esthetic", "{{ ikkyu_info[10] }}");
+        setupFacilityRadioButton("pet", "{{ ikkyu_info[11] }}");
+    }
+
+    function updateHotelFacilities() {
+        var hotel_facilities =
+                $('input[name="radio_room_service"]:checked').val() +
+                $('input[name="radio_park"]:checked').val() +
+                $('input[name="radio_bar"]:checked').val() +
+                $('input[name="radio_restaurant"]:checked').val() +
+                $('input[name="radio_fitness"]:checked').val() +
+                $('input[name="radio_esthetic"]:checked').val() +
+                $('input[name="radio_pet"]:checked').val();
+        hotel_facilities = hotel_facilities.replace(/(^,)|(,$)/g, "");
+        $("#input-hotel-facilities").val(hotel_facilities);
+    }
+
+    <!-- room facilities -->
+    function setupAllRoomFacilityRadioButtons() {
+        setupFacilityRadioButton("internet", "{{ jalan_info[1] }}");
+    }
+
+    function updateRoomFacilities() {
+        var room_facilities =
+                $('input[name="radio_internet"]:checked').val();
+        room_facilities = room_facilities.replace(/(^,)|(,$)/g, "");
+        $("#input-room-facilities").val(room_facilities);
+    }
+
+    <!-- copy buttons -->
+    function setupCopyButton(selectorName) {
+        var selectorCopyButton = "#copy-button-" + selectorName;
+        var selectorInput = "#input-" + selectorName;
+
+        $(selectorCopyButton).zclip({
+            path: "http://cdnjs.cloudflare.com/ajax/libs/zclip/1.1.2/ZeroClipboard.swf",
+            copy: function() { return $(selectorInput).val(); },
+            beforeCopy: function() {},
+            afterCopy: function() {}
+        });
+    }
+
+    function setupAllCopyButtons() {
+        setupCopyButton("ikyu-hotel-name");
+        setupCopyButton("jalan-hotel-name");
+
+        setupCopyButton("address");
+        setupCopyButton("tel");
+        setupCopyButton("check-in");
+        setupCopyButton("check-out");
+        setupCopyButton("hotel-facilities");
+
+        setupCopyButton("room-facilities");
+    }
+
+    <!-- kick -->
+    window.onload = function() {
+        setupAllHotelFacilityRadioButtons();
+        setupAllRoomFacilityRadioButtons();
+
+        updateHotelFacilities();
+        updateRoomFacilities();
+    }
+
+    $(function(){
+        setupAllCopyButtons();
+    });
 </script>
 
 </body>

@@ -72,6 +72,11 @@ def search_ikkyu_hotels(hotel_name):
 
 
 def scrape_ikkyu_hotel_details(url):
+    """
+    :param url:
+    :return: tuple contains hotel information; 0:name, 1:address, 2:tel, 3:checkin, 4:checkout,
+             5:room_service, 6:park, 7:bar, 8:restaurant, 9:fitness, 10:esthetic, 11:pet
+    """
     request = requests.get(url, headers={"User-Agent": USER_AGENT})
     if request.status_code != 200:
         raise Exception()
@@ -86,13 +91,15 @@ def scrape_ikkyu_hotel_details(url):
     tel = query_tel(query)
     checkin = query_checkin(query)
     checkout = query_checkout(query)
-    park = query_park(query)
     room_service = query_room_service(query)
-    esthetic = query_esthetic(query)
+    park = query_park(query)
+    bar = SERVICE_UNKNOWN
+    restaurant = SERVICE_UNKNOWN
     fitness = query_fitness(query)
+    esthetic = query_esthetic(query)
     pet = query_pet(query)
 
-    info = name, address, tel, checkin, checkout, park, room_service, esthetic, fitness, pet
+    info = name, address, tel, checkin, checkout, room_service, park, bar, restaurant, fitness, esthetic, pet
 
     return info
 
@@ -132,18 +139,6 @@ def query_checkout(query):
     return text
 
 
-def query_park(query):
-    park = SERVICE_UNKNOWN
-    text = query(SELECTOR_IKKYU_PARK).text()
-
-    if re.search(ur".*\d{1,3}台.*", text) is not None:
-        park = SERVICE_AVAILABLE
-    else:
-        park = SERVICE_UNAVAILABLE
-
-    return park
-
-
 def query_room_service(query):
     room_service = SERVICE_UNKNOWN
     text = query(SELECTOR_IKKYU_ROOM_SERVICE).text()
@@ -156,16 +151,16 @@ def query_room_service(query):
     return room_service
 
 
-def query_esthetic(query):
-    esthe = SERVICE_UNKNOWN
-    alt = query(SELECTOR_IKKYU_ESTHE).attr['alt']
+def query_park(query):
+    park = SERVICE_UNKNOWN
+    text = query(SELECTOR_IKKYU_PARK).text()
 
-    if alt == u"エステ施設あり":
-        esthe = SERVICE_AVAILABLE
-    elif alt == u"エステ施設なし":
-        esthe = SERVICE_UNAVAILABLE
+    if re.search(ur".*\d{1,3}台.*", text) is not None:
+        park = SERVICE_AVAILABLE
+    else:
+        park = SERVICE_UNAVAILABLE
 
-    return esthe
+    return park
 
 
 def query_fitness(query):
@@ -178,6 +173,18 @@ def query_fitness(query):
         fitness = SERVICE_UNAVAILABLE
 
     return fitness
+
+
+def query_esthetic(query):
+    esthe = SERVICE_UNKNOWN
+    alt = query(SELECTOR_IKKYU_ESTHE).attr['alt']
+
+    if alt == u"エステ施設あり":
+        esthe = SERVICE_AVAILABLE
+    elif alt == u"エステ施設なし":
+        esthe = SERVICE_UNAVAILABLE
+
+    return esthe
 
 
 def query_pet(query):

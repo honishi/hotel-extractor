@@ -10,7 +10,3 @@ body {
 .container {
   max-width: 60%;
 }
-
-.vcenter {
-  vertical-align: middle;
-}

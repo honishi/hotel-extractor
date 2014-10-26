@@ -8,6 +8,7 @@ import scrape
 
 URL_IKKYU_ROUTE_INN_SAPPORO = "http://www.ikyu.com/biz/00080380/"
 URL_IKKYU_THE_BEE_AKASAKA = "http://www.ikyu.com/biz/00080118/"
+URL_IKKYU_ANDAZ_TOKYO = "http://www.ikyu.com/00002011/"
 URL_IKKYU_NEW_OTANI =  "http://www.ikyu.com/biz/00080521/"
 URL_IKKYU_APA_HOTEL_OSAKA_HIGO = "http://www.ikyu.com/biz/00080691/"
 URL_IKKYU_REYZENIT_KINOSAKI = "http://www.ikyu.com/biz/00080672/"
@@ -22,8 +23,8 @@ URL_JALAN_ORENOIE = "http://www.jalan.net/yad303074/"
 def test_ikkyu_search():
     info = scrape.search_ikkyu_hotels(u"ルートイン札幌")
     assert(info[0] == 3)
-    assert(info[1] == u"ホテルルートイン札幌駅前北口")
-    assert(info[2] == URL_IKKYU_ROUTE_INN_SAPPORO)
+    # assert(info[1] == u"ホテルルートイン札幌中央")
+    # assert(info[2] == URL_IKKYU_ROUTE_INN_SAPPORO)
 
     info = scrape.search_ikkyu_hotels(u"ルートイン札幌北口")
     assert(info[0] == 1)
@@ -67,54 +68,61 @@ def test_ikkyu_checkout():
     assert(info[4] == u"10:00")
 
 
-def test_ikkyu_park():
-    # 駐車場あり
-    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
-    assert(info[5] == scrape.SERVICE_AVAILABLE)
-
-    # 駐車場なし
-    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_THE_BEE_AKASAKA)
-    assert(info[5] == scrape.SERVICE_UNAVAILABLE)
-
-
 def test_ikkyu_room_service():
     # ルームサービスあり
     info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_NEW_OTANI)
-    assert(info[6] == scrape.SERVICE_AVAILABLE)
+    assert(info[5] == scrape.SERVICE_AVAILABLE)
 
     # ルームサービスあり
     info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
+    assert(info[5] == scrape.SERVICE_UNAVAILABLE)
+
+
+def test_ikkyu_park():
+    # 駐車場あり
+    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
+    assert(info[6] == scrape.SERVICE_AVAILABLE)
+
+    # 駐車場なし
+    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_THE_BEE_AKASAKA)
+    assert(info[6] == scrape.SERVICE_UNAVAILABLE)
+
+    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ANDAZ_TOKYO)
     assert(info[6] == scrape.SERVICE_UNAVAILABLE)
 
 
-def test_ikkyu_esthetic():
-    # エステ施設あり
-    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_APA_HOTEL_OSAKA_HIGO)
-    assert(info[7] == scrape.SERVICE_AVAILABLE)
-
-    # エステ施設なし
-    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
-    assert(info[7] == scrape.SERVICE_UNAVAILABLE)
+# TODO: 7: bar
+# TODO: 8: restaurant
 
 
 def test_ikkyu_fitness():
     # フィットネス施設あり
     info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_TOKYO_DAIICHI_OKINAWA)
-    assert(info[8] == scrape.SERVICE_AVAILABLE)
+    assert(info[9] == scrape.SERVICE_AVAILABLE)
 
     # フィットネス施設なし
     info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
-    assert(info[8] == scrape.SERVICE_UNAVAILABLE)
+    assert(info[9] == scrape.SERVICE_UNAVAILABLE)
+
+
+def test_ikkyu_esthetic():
+    # エステ施設あり
+    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_APA_HOTEL_OSAKA_HIGO)
+    assert(info[10] == scrape.SERVICE_AVAILABLE)
+
+    # エステ施設なし
+    info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
+    assert(info[10] == scrape.SERVICE_UNAVAILABLE)
 
 
 def test_ikkyu_pet():
     # ペット受入可
     info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_REYZENIT_KINOSAKI)
-    assert(info[9] == scrape.SERVICE_AVAILABLE)
+    assert(info[11] == scrape.SERVICE_AVAILABLE)
 
     # ペット受け入れ不可
     info = scrape.scrape_ikkyu_hotel_details(URL_IKKYU_ROUTE_INN_SAPPORO)
-    assert(info[9] == scrape.SERVICE_UNAVAILABLE)
+    assert(info[11] == scrape.SERVICE_UNAVAILABLE)
 
 
 # jalan tests
